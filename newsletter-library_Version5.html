@@ -1,17 +1,248 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <style>
-        .youtube-iframe {
-            width: 210px;
-            height: 150px;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Newsletter Library</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;800&family=Outfit:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg1:#f7fbff;
+      --bg2:#fff6ed;
+      --ink:#132238;
+      --muted:#516173;
+      --card:#ffffffcc;
+      --line:#dbe5ef;
+      --accent:#0f766e;
+      --shadow:0 14px 40px rgba(12,31,58,.12);
+      --radius:18px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:"Outfit", sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(1000px 600px at 10% 0%, #d8efff 0%, transparent 60%),
+        radial-gradient(900px 500px at 100% 0%, #ffe3bf 0%, transparent 55%),
+        linear-gradient(135deg,var(--bg1),var(--bg2));
+      min-height:100vh;
+    }
+
+    .wrap{
+      max-width:1100px;
+      margin:40px auto;
+      padding:0 16px 32px;
+      animation:fadeIn .6s ease both;
+    }
+
+    .youtube-videos{
+      margin-bottom:28px;
+      padding:10px 0;
+    }
+
+    .youtube-row{
+      display:flex;
+      gap:12px;
+      justify-content:center;
+      flex-wrap:nowrap;
+      overflow-x:auto;
+    }
+
+    .youtube-iframe{
+      width:210px;
+      height:150px;
+      flex-shrink:0;
+      border-radius:12px;
+      box-shadow:0 3px 12px rgba(12,31,58,.12);
+      background:#fff;
+      border:0;
+    }
+
+    .hero{
+      background:var(--card);
+      border:1px solid var(--line);
+      backdrop-filter: blur(8px);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:28px;
+      margin-bottom:18px;
+    }
+
+    h1{
+      font-family:"Fraunces", serif;
+      font-weight:800;
+      margin:0 0 8px;
+      font-size:clamp(1.8rem, 3.3vw, 2.9rem);
+      line-height:1.1;
+    }
+
+    .sub{
+      margin:0;
+      color:var(--muted);
+      font-size:1.02rem;
+    }
+
+    .toolbar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin:16px 0 18px;
+    }
+
+    .month-btn{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:999px;
+      padding:10px 14px;
+      font-weight:600;
+      color:var(--ink);
+      cursor:pointer;
+      transition:.2s ease;
+    }
+
+    .month-btn:hover{ transform:translateY(-1px); }
+
+    .month-btn.active{
+      border-color:transparent;
+      background:linear-gradient(135deg,var(--accent),#0891b2);
+      color:#fff;
+      box-shadow:0 6px 18px rgba(8,145,178,.25);
+    }
+
+    .viewer{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .viewer-head{
+      padding:12px 16px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .viewer-title{
+      font-weight:700;
+    }
+
+    .open-link{
+      text-decoration:none;
+      color:#0b5ed7;
+      font-weight:600;
+    }
+
+    iframe{
+      width:100%;
+      height:70vh;
+      min-height:520px;
+      border:0;
+      display:block;
+      background:#fff;
+    }
+
+    @keyframes fadeIn{
+      from{opacity:0; transform:translateY(8px)}
+      to{opacity:1; transform:translateY(0)}
+    }
+  </style>
 </head>
 <body>
-    <!-- Your content here -->
-    <iframe class='youtube-iframe' src='https://www.youtube.com/embed/example' allowfullscreen></iframe>
-    <iframe class='youtube-iframe' src='https://www.youtube.com/embed/example2' allowfullscreen></iframe>
-    <!-- Add more iframes as needed -->
+  <main class="wrap">
+    <section class="youtube-videos">
+      <div class="youtube-row">
+        <iframe class="youtube-iframe" src="https://www.youtube-nocookie.com/embed/pIZCqTtTRnQ" title="MHT Social Exceptional Educators" allowfullscreen></iframe>
+        <iframe class="youtube-iframe" src="https://www.youtube-nocookie.com/embed/GCtQkbsDdn0" title="MHT Social Tight Knit Community" allowfullscreen></iframe>
+        <iframe class="youtube-iframe" src="https://www.youtube-nocookie.com/embed/iN25izx1SX0" title="MHT Social Extra Curriculars" allowfullscreen></iframe>
+        <iframe class="youtube-iframe" src="https://www.youtube-nocookie.com/embed/ypc-ksaJT-s" title="MHT Social Small School" allowfullscreen></iframe>
+        <iframe class="youtube-iframe" src="https://www.youtube-nocookie.com/embed/K34Uq0kTuu8" title="MHT Social STEM and Art Opportunities" allowfullscreen></iframe>
+        <iframe class="youtube-iframe" src="https://www.youtube-nocookie.com/embed/h3pwC83s5LA" title="Welcome to MHT!" allowfullscreen></iframe>
+      </div>
+    </section>
+
+    <section class="hero">
+      <h1>Newsletter Library</h1>
+      <p class="sub">Current month is always shown first, then previous months.</p>
+    </section>
+
+    <nav class="toolbar" id="monthToolbar"></nav>
+
+    <section class="viewer">
+      <div class="viewer-head">
+        <div class="viewer-title" id="viewerTitle">Loading...</div>
+        <a id="openInDrive" class="open-link" target="_blank" rel="noopener">Open in Google Drive</a>
+      </div>
+      <iframe id="driveFrame" title="Google Drive Newsletter Folder"></iframe>
+    </section>
+  </main>
+
+  <script>
+    const rootFolder = { label: "All Newsletters", id: "1Iiwqg74TcjLSraqLVfY25NpVDaLzI7Nx" };
+
+    const monthFolders = [
+      { label: "January", id: "1TaSGKSbfhqAO9LQteck8zAR0mW2jybuP" },
+      { label: "February", id: "1fQMAl_USM2MIiqRJDyLtFAla01Ip-V3M" },
+      { label: "March", id: "1O2ggeVC3G7wkZk-2JSDmqV8VO41j2IKa" },
+      { label: "April", id: "13EJa4JmmGVFYjIDfghZ2wtpCTpKT4EmN" },
+      { label: "May", id: "1lgMR0L8AhQOIdypZ433JJp0cxbOK_iqv" },
+      { label: "June", id: "1ebWXzxAH6smOsV2TJOVabcjaz5K7M1zB" },
+      { label: "July", id: "1n5YpiYAiY1mJ3lSmgWmwiuI38zx18dpP" },
+      { label: "August", id: "1u4pOkKIkvJLsTYQoPL8wl4Xt34Xi2JHT" },
+      { label: "September", id: "12Ac5iW8XlcfA2Xaiae_cO8RN59XmA1DB" },
+      { label: "October", id: "1Sq0d8_BgZ937tQ4G55ZIPONcLDOIyw1L" },
+      { label: "November", id: "1_S-jsGT-mmuR7Ddx9t8OGQvy0uq7QOZ5" },
+      { label: "December", id: "1mkSB__atsK5cOaVvqEwAoDYuauHYO6mO" }
+    ];
+
+    const currentMonthIndex = new Date().getMonth();
+    const orderedMonths = [];
+    for (let i = 0; i < 12; i++) {
+      const idx = (currentMonthIndex - i + 12) % 12;
+      orderedMonths.push(monthFolders[idx]);
+    }
+
+    const folders = [...orderedMonths, rootFolder];
+
+    const toolbar = document.getElementById("monthToolbar");
+    const frame = document.getElementById("driveFrame");
+    const title = document.getElementById("viewerTitle");
+    const openLink = document.getElementById("openInDrive");
+
+    function folderEmbedUrl(id) {
+      return `https://drive.google.com/embeddedfolderview?id=${id}#grid`;
+    }
+
+    function folderOpenUrl(id) {
+      return `https://drive.google.com/drive/folders/${id}`;
+    }
+
+    function setActiveFolder(folder, clickedBtn) {
+      frame.src = folderEmbedUrl(folder.id);
+      title.textContent = folder.label;
+      openLink.href = folderOpenUrl(folder.id);
+
+      document.querySelectorAll(".month-btn").forEach(b => b.classList.remove("active"));
+      if (clickedBtn) clickedBtn.classList.add("active");
+    }
+
+    folders.forEach((folder, i) => {
+      const btn = document.createElement("button");
+      btn.className = "month-btn" + (i === 0 ? " active" : "");
+      btn.textContent = folder.label;
+      btn.addEventListener("click", () => setActiveFolder(folder, btn));
+      toolbar.appendChild(btn);
+    });
+
+    setActiveFolder(folders[0], document.querySelector(".month-btn.active"));
+  </script>
 </body>
 </html>
