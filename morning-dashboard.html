@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MHT Morning Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;800&family=Outfit:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg1: #f2f8ff;
+      --bg2: #fff6ee;
+      --ink: #15243a;
+      --muted: #55657a;
+      --card: #ffffffdd;
+      --line: #dbe5f0;
+      --accent: #0f766e;
+      --shadow: 0 14px 36px rgba(21, 36, 58, 0.12);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Outfit", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(900px 480px at 12% 0%, #d8edff 0%, transparent 60%),
+        radial-gradient(860px 460px at 100% 0%, #ffe4be 0%, transparent 56%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 1280px;
+      margin: 20px auto;
+      padding: 0 16px 24px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .toolbar {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      box-shadow: var(--shadow);
+    }
+
+    .toolbar strong { font-family: "Fraunces", serif; }
+
+    .dashboard-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(var(--columns, 2), minmax(0, 1fr));
+    }
+
+    .widget {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      overflow: hidden;
+    }
+
+    .widget-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      background: #f7fbff;
+    }
+
+    .widget h2 {
+      margin: 0;
+      font-size: 1.02rem;
+      font-family: "Fraunces", serif;
+    }
+
+    .drag-handle {
+      cursor: grab;
+      user-select: none;
+      color: var(--muted);
+      font-size: 0.88rem;
+      border: 1px dashed #c3d6eb;
+      border-radius: 8px;
+      padding: 4px 8px;
+      background: #fff;
+    }
+
+    .widget-body { padding: 12px; }
+
+    .hero-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1.3fr 1fr 1fr;
+      align-items: center;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Fraunces", serif;
+      font-size: clamp(1.5rem, 2.6vw, 2.2rem);
+      line-height: 1.1;
+    }
+
+    .sub { margin: 6px 0 0; color: var(--muted); }
+    .badge {
+      margin-top: 8px;
+      display: inline-block;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: #fff;
+      font-weight: 600;
+    }
+
+    .fact {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 10px 12px;
+    }
+
+    .fact .k { color: var(--muted); font-size: 0.86rem; }
+    .fact .v { font-weight: 700; margin-top: 4px; }
+
+    .quick-cards,
+    .calendars,
+    .split,
+    .list-columns { display: grid; gap: 10px; }
+    .quick-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .calendars { grid-template-columns: 1fr 1fr; }
+    .split { grid-template-columns: 1.2fr 1fr; }
+    .list-columns { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 10px;
+    }
+
+    .card h3 { margin: 0 0 6px; font-size: 0.95rem; }
+    .card p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+
+    .jobs-table,
+    .count-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      font-size: 0.92rem;
+    }
+
+    .jobs-table th,
+    .jobs-table td,
+    .count-table th,
+    .count-table td {
+      border-bottom: 1px solid var(--line);
+      padding: 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .jobs-table thead th,
+    .count-table thead th {
+      background: #f5f9ff;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .jobs-table tr:last-child td,
+    .count-table tr:last-child td { border-bottom: none; }
+
+    .calendar-card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .calendar-card h3 {
+      margin: 0;
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--line);
+      font-size: 0.92rem;
+      background: #f7fbff;
+    }
+
+    iframe { width: 100%; border: 0; display: block; }
+    .calendar-card iframe { height: 330px; }
+    .newsletter iframe { height: 250px; }
+    .spotify iframe { height: 352px; border-radius: 12px; }
+
+    .action-bar,
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+      align-items: center;
+    }
+
+    input, select, button, textarea {
+      font: inherit;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 10px;
+      background: #fff;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      resize: vertical;
+      font-size: 0.9rem;
+    }
+
+    button {
+      cursor: pointer;
+      border: 0;
+      background: linear-gradient(135deg, var(--accent), #0891b2);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .muted-btn {
+      background: #eef4ff;
+      color: #204368;
+      border: 1px solid #cdddf0;
+    }
+
+    .chip-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px 8px;
+      background: #f8fbff;
+      font-size: 0.84rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chip button {
+      background: #ef4444;
+      border-radius: 999px;
+      padding: 0 6px;
+      line-height: 1.2;
+    }
+
+    .status { color: var(--muted); font-size: 0.9rem; }
+
+    .locked { overflow: hidden; }
+
+    .auth-gate {
+      position: fixed;
+      inset: 0;
+      background: rgba(21, 36, 58, 0.45);
+      display: grid;
+      place-items: center;
+      z-index: 999;
+      padding: 16px;
+    }
+
+    .auth-card {
+      width: min(460px, 100%);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .auth-card h2 {
+      margin: 0 0 8px;
+      font-family: "Fraunces", serif;
+    }
+
+    .auth-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    #authError { color: #b42318; font-size: 0.9rem; min-height: 1.2em; margin-top: 8px; }
+
+    .widget.dragging { opacity: 0.5; }
+    a { color: #065f88; font-weight: 600; }
+
+    @media (max-width: 1080px) {
+      .hero-grid,
+      .quick-cards,
+      .split,
+      .calendars,
+      .list-columns { grid-template-columns: 1fr; }
+      .dashboard-grid { grid-template-columns: 1fr !important; }
+    }
+  </style>
+</head>
+<body class="locked">
+  <section class="auth-gate" id="authGate">
+    <form class="auth-card" id="authForm">
+      <h2>Staff Dashboard Access</h2>
+      <p style="margin:0;color:var(--muted)">Enter the staff password to open the morning dashboard.</p>
+      <div class="auth-row">
+        <input id="passwordInput" type="password" placeholder="Password" autocomplete="current-password" style="flex:1" />
+        <button type="submit">Unlock</button>
+      </div>
+      <div id="authError"></div>
+      <p style="margin:0;color:var(--muted);font-size:.85rem">Tip: update <code>DASHBOARD_PASSWORD</code> in this file.</p>
+    </form>
+  </section>
+  <main class="wrap" id="appRoot" hidden>
+    <section class="toolbar">
+      <strong>Dashboard Layout</strong>
+      <label>Columns:
+        <select id="columnSelect">
+          <option value="1">1</option>
+          <option value="2" selected>2</option>
+          <option value="3">3</option>
+        </select>
+      </label>
+      <button id="resetLayoutBtn" class="muted-btn">Reset Widget Order</button>
+      <span class="status">Tip: drag widgets by the “Move” handle to arrange your view.</span>
+    </section>
+
+    <section class="dashboard-grid" id="dashboardGrid" style="--columns:2">
+      <article class="widget" draggable="true" data-widget-id="hero">
+        <div class="widget-header"><h2>Morning Overview</h2><span class="drag-handle">Move</span></div>
+        <div class="widget-body hero-grid">
+          <div>
+            <h1>MHT Morning Dashboard</h1>
+            <p class="sub">Widgets for daily planning, class lists, and job tracking.</p>
+            <div class="badge" id="todayBadge">Loading date...</div>
+          </div>
+          <div class="fact">
+            <div class="k">Monthly Character Strong Theme</div>
+            <div class="v" id="themeText">Loading...</div>
+          </div>
+          <div class="fact">
+            <div class="k">Current School Week</div>
+            <div class="v" id="weekRange">Loading...</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="widget" draggable="true" data-widget-id="glance">
+        <div class="widget-header"><h2>Today at a Glance</h2><span class="drag-handle">Move</span></div>
+        <div class="widget-body quick-cards">
+          <div class="card"><h3>Lunch Menu</h3><p>Use internal calendar notes + newsletter for final lunch details.</p></div>
+          <div class="card"><h3>Specials</h3><p>Use the public calendar schedule below for daily specials timing.</p></div>
+          <div class="card"><h3>Important Info</h3><p>Use internal notes and Sunday newsletter announcements.</p></div>
+        </div>
+      </article>
+
+      <article class="widget" draggable="true" data-widget-id="jobs">
+        <div class="widget-header"><h2>Weekly Student Jobs</h2><span class="drag-handle">Move</span></div>
+        <div class="widget-body">
+          <table class="jobs-table" id="jobsTable">
+            <thead>
+              <tr>
+                <th>Day</th>
+                <th>Door Holders (K/1)</th>
+                <th>Morning Announcement (4/5)</th>
+                <th>Pledge (2/3)</th>
+                <th>Bell Ringer (K/1)</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <div class="action-bar">
+            <button id="markTodayDoneBtn">Mark Today's Jobs Complete (+count)</button>
+            <button id="resetCountsBtn" class="muted-btn">Reset Job Counts</button>
+            <span id="jobsStatus" class="status">Job counts have not been updated today.</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="widget" draggable="true" data-widget-id="classes">
+        <div class="widget-header"><h2>Class Lists Manager</h2><span class="drag-handle">Move</span></div>
+        <div class="widget-body split">
+          <section class="card">
+            <h3>Quick Add / Remove</h3>
+            <p>Fast one-student edits and click-to-remove chips.</p>
+            <div class="form-row">
+              <select id="groupSelect">
+                <option value="k1">K / 1</option>
+                <option value="g23">2 / 3</option>
+                <option value="g45">4 / 5</option>
+              </select>
+              <input id="studentInput" type="text" placeholder="Student name" />
+              <button id="addStudentBtn">Add Student</button>
+            </div>
+            <div class="list-columns" id="classLists"></div>
+          </section>
+
+          <section class="card">
+            <h3>Bulk Edit Lists</h3>
+            <p>Paste one student per line, then save each group.</p>
+            <label>K / 1</label>
+            <textarea id="bulkK1"></textarea>
+            <div class="action-bar"><button data-save-group="k1">Save K/1</button></div>
+            <label>2 / 3</label>
+            <textarea id="bulkG23"></textarea>
+            <div class="action-bar"><button data-save-group="g23">Save 2/3</button></div>
+            <label>4 / 5</label>
+            <textarea id="bulkG45"></textarea>
+            <div class="action-bar"><button data-save-group="g45">Save 4/5</button></div>
+          </section>
+        </div>
+      </article>
+
+      <article class="widget" draggable="true" data-widget-id="counts">
+        <div class="widget-header"><h2>Job Assignment Totals</h2><span class="drag-handle">Move</span></div>
+        <div class="widget-body">
+          <table class="count-table" id="countTable">
+            <thead>
+              <tr><th>Student</th><th>Group</th><th>Job Count</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="widget" draggable="true" data-widget-id="calendars">
+        <div class="widget-header"><h2>Weekly Calendars</h2><span class="drag-handle">Move</span></div>
+        <div class="widget-body calendars">
+          <article class="calendar-card">
+            <h3>Public School Calendar</h3>
+            <iframe title="Public calendar" src="https://calendar.google.com/calendar/embed?src=sau50.org_i3r7c2uh43dstj3qdkdgnak6ig%40group.calendar.google.com&ctz=America%2FNew_York&mode=WEEK&showPrint=0&showCalendars=0"></iframe>
+          </article>
+          <article class="calendar-card">
+            <h3>Internal Staff Calendar</h3>
+            <iframe title="Internal calendar" src="https://calendar.google.com/calendar/embed?src=c_classroom90cfb6c1%40group.calendar.google.com&ctz=America%2FNew_York&mode=WEEK&showPrint=0&showCalendars=0"></iframe>
+          </article>
+        </div>
+      </article>
+
+      <article class="widget newsletter" draggable="true" data-widget-id="newsletter">
+        <div class="widget-header"><h2>Weekly Newsletter Folder</h2><span class="drag-handle">Move</span></div>
+        <div class="widget-body">
+          <p style="margin-top:0;color:var(--muted)">Pull content from the newest newsletter posted on Sunday.</p>
+          <p style="margin-top:0"><a target="_blank" rel="noopener" href="https://drive.google.com/drive/folders/1Iiwqg74TcjLSraqLVfY25NpVDaLzI7Nx?usp=drive_link">Open newsletter folder in Google Drive</a></p>
+          <iframe title="Newsletter folder" src="https://drive.google.com/embeddedfolderview?id=1Iiwqg74TcjLSraqLVfY25NpVDaLzI7Nx#list"></iframe>
+        </div>
+      </article>
+
+      <article class="widget spotify" draggable="true" data-widget-id="spotify">
+        <div class="widget-header"><h2>Morning Music (Spotify)</h2><span class="drag-handle">Move</span></div>
+        <div class="widget-body">
+          <p style="margin-top:0;color:var(--muted)">Use during arrival and transition routines.</p>
+          <iframe src="https://open.spotify.com/embed/playlist/37i9dQZF1DX0SM0LYsmbMT?utm_source=generator" title="Spotify playlist" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const DASHBOARD_PASSWORD = "MHTStaff2026";
+    const AUTH_STORAGE_KEY = "mhtDashboardAuthed";
+
+    function unlockDashboard() {
+      document.body.classList.remove("locked");
+      document.getElementById("authGate").style.display = "none";
+      document.getElementById("appRoot").hidden = false;
+    }
+
+    function initAuthGate() {
+      const alreadyAuthed = sessionStorage.getItem(AUTH_STORAGE_KEY) === "true";
+      if (alreadyAuthed) {
+        unlockDashboard();
+        return;
+      }
+
+      const form = document.getElementById("authForm");
+      const input = document.getElementById("passwordInput");
+      const error = document.getElementById("authError");
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (input.value === DASHBOARD_PASSWORD) {
+          sessionStorage.setItem(AUTH_STORAGE_KEY, "true");
+          unlockDashboard();
+        } else {
+          error.textContent = "Incorrect password. Please try again.";
+          input.select();
+        }
+      });
+    }
+
+    const STORAGE_KEYS = {
+      roster: "mhtRosterData",
+      counts: "mhtJobCounts",
+      markedDay: "mhtLastMarkedDay",
+      layoutOrder: "mhtWidgetOrder",
+      layoutCols: "mhtWidgetColumns"
+    };
+
+    const themeByMonth = {
+      0: "Perseverance", 1: "Kindness", 2: "Cooperation", 3: "Courage",
+      4: "Gratitude", 5: "Responsibility", 6: "Respect", 7: "Empathy",
+      8: "Citizenship", 9: "Integrity", 10: "Self-Control", 11: "Compassion"
+    };
+
+    const initialRoster = {
+      k1: [
+        "Blaise Ambrose", "Sylvia Zimmerman", "Bennett Lannan", "Claire Hermon", "Lilly Oliver", "Sam Kovick",
+        "Henry Severance", "Maeve Stebbins", "Olivia Ableman", "Azalea Zimmerman", "Markus McKeon", "Greta Blackington",
+        "Rita Adler", "Beau Blackington", "Jack Adler", "Sol Kim", "Robert Owens", "August McKeon", "Granthum Couturier", "Gia Sierra"
+      ],
+      g23: ["Palmer Ambrose", "Ember Barker", "Colton Couturier", "Ollie Tanguay", "Mirabelle Gahan", "Matthew Oliver", "Miles Borges-Perrin", "Vivian Rodriguez"],
+      g45: ["Oliver Michelin", "Quinton Cottom", "Truman Michelin", "Connor Hermon", "Harry Oliver", "Harper Weston", "Samuel Simeonov", "Oliver Gahan", "Beckett Blackington", "Max Hajjar", "Peter Barry"]
+    };
+
+    const groupNames = { k1: "K/1", g23: "2/3", g45: "4/5" };
+    const dashboardGrid = document.getElementById("dashboardGrid");
+
+    let roster = loadFromStorage(STORAGE_KEYS.roster, initialRoster);
+    let jobCounts = loadFromStorage(STORAGE_KEYS.counts, {});
+
+    const today = new Date();
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+    const friday = new Date(monday);
+    friday.setDate(monday.getDate() + 4);
+
+    const dateFmt = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+    const shortFmt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" });
+
+    document.getElementById("todayBadge").textContent = dateFmt.format(today);
+    document.getElementById("themeText").textContent = themeByMonth[today.getMonth()] || "Character Strong Theme";
+    document.getElementById("weekRange").textContent = `${shortFmt.format(monday)} - ${shortFmt.format(friday)}`;
+
+    function loadFromStorage(key, fallback) {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    }
+
+    function saveToStorage(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function pickMany(list, seed, count) {
+      if (!list.length) return Array(count).fill("—");
+      const picks = [];
+      for (let i = 0; i < count; i++) picks.push(list[(seed + i) % list.length]);
+      return picks;
+    }
+
+    function businessDays(startDate) {
+      return Array.from({ length: 5 }, (_, i) => {
+        const d = new Date(startDate);
+        d.setDate(startDate.getDate() + i);
+        return d;
+      });
+    }
+
+    function getAssignmentsForDate(d) {
+      const seed = Math.floor(d.getTime() / 86400000);
+      return {
+        doors: pickMany(roster.k1, seed, 2),
+        announcement: pickMany(roster.g45, seed + 1, 1)[0],
+        pledge: pickMany(roster.g23, seed + 2, 1)[0],
+        bell: pickMany(roster.k1, seed + 3, 1)[0]
+      };
+    }
+
+    function renderJobsTable() {
+      const tbody = document.querySelector("#jobsTable tbody");
+      tbody.innerHTML = "";
+      businessDays(monday).forEach((d) => {
+        const assignment = getAssignmentsForDate(d);
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><strong>${new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(d)}</strong><br>${shortFmt.format(d)}</td>
+          <td>${assignment.doors.join(" & ")}</td>
+          <td>${assignment.announcement}</td>
+          <td>${assignment.pledge}</td>
+          <td>${assignment.bell}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderClassLists() {
+      const classLists = document.getElementById("classLists");
+      classLists.innerHTML = "";
+
+      Object.entries(roster).forEach(([group, students]) => {
+        const card = document.createElement("section");
+        card.className = "card";
+        card.innerHTML = `<h3>${groupNames[group]} Students</h3><p>${students.length} enrolled</p>`;
+
+        const chips = document.createElement("div");
+        chips.className = "chip-list";
+
+        students.forEach((name) => {
+          const chip = document.createElement("span");
+          chip.className = "chip";
+          chip.innerHTML = `${name} <button title="Remove ${name}">×</button>`;
+          chip.querySelector("button").addEventListener("click", () => {
+            roster[group] = roster[group].filter((s) => s !== name);
+            saveToStorage(STORAGE_KEYS.roster, roster);
+            syncBulkEditors();
+            renderAll();
+          });
+          chips.appendChild(chip);
+        });
+
+        card.appendChild(chips);
+        classLists.appendChild(card);
+      });
+    }
+
+    function renderCountTable() {
+      const all = [];
+      Object.entries(roster).forEach(([group, students]) => {
+        students.forEach((name) => all.push({ name, group: groupNames[group], count: jobCounts[name] || 0 }));
+      });
+      all.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+
+      const tbody = document.querySelector("#countTable tbody");
+      tbody.innerHTML = "";
+      all.forEach((student) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${student.name}</td><td>${student.group}</td><td>${student.count}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function syncBulkEditors() {
+      document.getElementById("bulkK1").value = roster.k1.join("\n");
+      document.getElementById("bulkG23").value = roster.g23.join("\n");
+      document.getElementById("bulkG45").value = roster.g45.join("\n");
+    }
+
+    function saveBulkGroup(group) {
+      const map = { k1: "bulkK1", g23: "bulkG23", g45: "bulkG45" };
+      const lines = document.getElementById(map[group]).value.split("\n");
+      roster[group] = [...new Set(lines.map((l) => l.trim()).filter(Boolean))];
+      saveToStorage(STORAGE_KEYS.roster, roster);
+      renderAll();
+    }
+
+    function markTodaysJobsComplete() {
+      const todayKey = today.toISOString().slice(0, 10);
+      const status = document.getElementById("jobsStatus");
+      if (localStorage.getItem(STORAGE_KEYS.markedDay) === todayKey) {
+        status.textContent = "Today's jobs were already counted.";
+        return;
+      }
+
+      const assignment = getAssignmentsForDate(today);
+      const selected = [...assignment.doors, assignment.announcement, assignment.pledge, assignment.bell].filter((v) => v && v !== "—");
+      selected.forEach((name) => {
+        jobCounts[name] = (jobCounts[name] || 0) + 1;
+      });
+
+      saveToStorage(STORAGE_KEYS.counts, jobCounts);
+      localStorage.setItem(STORAGE_KEYS.markedDay, todayKey);
+      status.textContent = `Counted ${selected.length} assignments for ${todayKey}.`;
+      renderCountTable();
+    }
+
+    function resetCounts() {
+      jobCounts = {};
+      saveToStorage(STORAGE_KEYS.counts, jobCounts);
+      localStorage.removeItem(STORAGE_KEYS.markedDay);
+      document.getElementById("jobsStatus").textContent = "All job counts were reset.";
+      renderCountTable();
+    }
+
+    function saveLayoutOrder() {
+      const order = [...dashboardGrid.querySelectorAll(".widget")].map((w) => w.dataset.widgetId);
+      saveToStorage(STORAGE_KEYS.layoutOrder, order);
+    }
+
+    function applySavedLayoutOrder() {
+      const order = loadFromStorage(STORAGE_KEYS.layoutOrder, []);
+      if (!order.length) return;
+      const widgetsById = new Map([...dashboardGrid.querySelectorAll(".widget")].map((w) => [w.dataset.widgetId, w]));
+      order.forEach((id) => {
+        const w = widgetsById.get(id);
+        if (w) dashboardGrid.appendChild(w);
+      });
+    }
+
+    function applySavedColumns() {
+      const cols = String(loadFromStorage(STORAGE_KEYS.layoutCols, 2));
+      dashboardGrid.style.setProperty("--columns", cols);
+      document.getElementById("columnSelect").value = cols;
+    }
+
+    function resetLayout() {
+      localStorage.removeItem(STORAGE_KEYS.layoutOrder);
+      localStorage.removeItem(STORAGE_KEYS.layoutCols);
+      window.location.reload();
+    }
+
+    function initDragDrop() {
+      let dragged = null;
+      dashboardGrid.querySelectorAll(".widget").forEach((widget) => {
+        widget.addEventListener("dragstart", () => {
+          dragged = widget;
+          widget.classList.add("dragging");
+        });
+
+        widget.addEventListener("dragend", () => {
+          widget.classList.remove("dragging");
+          dragged = null;
+          saveLayoutOrder();
+        });
+
+        widget.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          if (!dragged || dragged === widget) return;
+          const rect = widget.getBoundingClientRect();
+          const before = e.clientY < rect.top + rect.height / 2;
+          if (before) {
+            dashboardGrid.insertBefore(dragged, widget);
+          } else {
+            dashboardGrid.insertBefore(dragged, widget.nextSibling);
+          }
+        });
+      });
+    }
+
+    function renderAll() {
+      renderJobsTable();
+      renderClassLists();
+      syncBulkEditors();
+      renderCountTable();
+    }
+
+    document.getElementById("addStudentBtn").addEventListener("click", () => {
+      const group = document.getElementById("groupSelect").value;
+      const input = document.getElementById("studentInput");
+      const name = input.value.trim();
+      if (!name || roster[group].includes(name)) return;
+      roster[group].push(name);
+      saveToStorage(STORAGE_KEYS.roster, roster);
+      input.value = "";
+      renderAll();
+    });
+
+    document.querySelectorAll("button[data-save-group]").forEach((btn) => {
+      btn.addEventListener("click", () => saveBulkGroup(btn.dataset.saveGroup));
+    });
+
+    document.getElementById("markTodayDoneBtn").addEventListener("click", markTodaysJobsComplete);
+    document.getElementById("resetCountsBtn").addEventListener("click", resetCounts);
+
+    document.getElementById("columnSelect").addEventListener("change", (e) => {
+      dashboardGrid.style.setProperty("--columns", e.target.value);
+      saveToStorage(STORAGE_KEYS.layoutCols, Number(e.target.value));
+    });
+
+    document.getElementById("resetLayoutBtn").addEventListener("click", resetLayout);
+
+    initAuthGate();
+    applySavedColumns();
+    applySavedLayoutOrder();
+    initDragDrop();
+    renderAll();
+  </script>
+</body>
+</html>
